@@ -51,6 +51,8 @@ function isNumeric(n) {
   return !isNaN(parseFloat(n)) && isFinite(n);
 }
 
+var availableNumbers = [0,10,11,12,13,14,15,16,17,18,19,1,20,21,22,23,2,35,38,3,41,49,4,50,56,5,64,67,6,73,79,7,88,89,8,92,97,9];
+
 $(function () {
   var numbers = undefined;
 
@@ -59,13 +61,13 @@ $(function () {
     $('#numbers').val('');
     numbers = [];
     for (var i = 0; i < 3; i++) {
-      var number = Math.floor(Math.random() * 11);
+      var number = availableNumbers[Math.floor(Math.random() * availableNumbers.length)];
       numbers.push(number);
     }
     setTimeout(function () {
       playSounds(numbers.map(function (number) {
         return 'sound/se/' + number + '.ogx';
-      }), 1000);
+      }), 500);
     }, 1000);
   });
 
