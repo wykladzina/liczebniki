@@ -30,25 +30,69 @@ function playSounds(sounds, delay) {
     })();
     ++i;
   }
+  return playFinishedPromise;
+}
+
+function playNumbers(numbers, delay) {
+  return playSounds(numbers.map(function (number) {
+    return 'sound/se/' + number + '.ogx';
+  }), delay);
+}
+
+function repeat(promiseFactory, howManyTimes) {
+  var promise = promiseFactory();
+  var firstPromise = promise;
+  for (var i = 1; i < howManyTimes; i++) {
+    promise = promise.then(promiseFactory);
+  }
+  return firstPromise;
 }
 
 function startMessages() {
   $message = 'Kliknij przycisk <i>start</i>. Potem słuchaj uważnie, jak komputer będzie mówił liczby, i wpisz je w okienko poniżej.';
   $('#message-top').html($message);
-  $('#check').hide();
+  $('#message-bottom').html('');
+  $('#numbers').val('');
   $('#start').show();
+  $('#repeat').hide();
+  $('#check').hide();
+  $('#again').hide();
 }
 
 function checkMessages() {
-  $message = 'Wpisz liczby, które usłyszysz za chwilę. Potem kliknij przycisk <i>sprawdź</i>.';
+  $message = 'Wpisz w okienko liczby, które usłyszysz za chwilę.';
   $('#message-top').html($message);
   $('#start').hide();
+  $('#repeat').hide();
+  $('#check').hide();
+  $('#again').hide();
+}
+
+function repeatMessages() {
+  $message = 'Jeśli chcesz usłyszeć te liczby jeszcze raz, kliknij przycisk <i>powtórz</i>. Jeśli nie, kliknij przycisk <i>sprawdź</i>';
+  $('#message-top').html($message);
+  $('#start').hide();
+  $('#repeat').show();
   $('#check').show();
+  $('#again').hide();
+}
+
+function resultMessages() {
+  $message = 'Jeśli chcesz zagrać jeszcze raz, kliknij przycisk <i>jeszcze raz</i>';
+  $('#message-top').html($message);
+  $('#start').hide();
+  $('#repeat').hide();
+  $('#check').hide();
+  $('#again').show();
 }
 
 // http://stackoverflow.com/questions/18082/validate-decimal-numbers-in-javascript-isnumeric
 function isNumeric(n) {
   return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+function choose(array) {
+  return array[Math.floor(Math.random() * array.length)]
 }
 
 var availableNumbers = [0,10,11,12,13,14,15,16,17,18,19,1,20,21,22,23,2,35,38,3,41,49,4,50,56,5,64,67,6,73,79,7,88,89,8,92,97,9];
@@ -58,17 +102,25 @@ $(function () {
 
   $('#start').click(function () {
     checkMessages();
-    $('#numbers').val('');
     numbers = [];
     for (var i = 0; i < 3; i++) {
-      var number = availableNumbers[Math.floor(Math.random() * availableNumbers.length)];
+      var number = choose(availableNumbers);
       numbers.push(number);
     }
-    setTimeout(function () {
-      playSounds(numbers.map(function (number) {
-        return 'sound/se/' + number + '.ogx';
-      }), 500);
-    }, 1000);
+    playNumbers(numbers, 500).then(function () {
+      repeatMessages();
+    });
+  });
+
+  $('#repeat').click(function () {
+    checkMessages();
+    playNumbers(numbers, 500).then(function () {
+      repeatMessages();
+    });
+  });
+
+  $('#again').click(function () {
+    startMessages();
   });
 
   $('#check').click(function () {
@@ -83,7 +135,7 @@ $(function () {
     } else {
       $('#message-bottom').text('Źle. To były liczby ' + numbers);
     }
-    startMessages();
+    resultMessages();
   });
 
   startMessages();
