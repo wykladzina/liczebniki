@@ -97,6 +97,16 @@ function choose(array) {
 
 var availableNumbers = [0,10,11,12,13,14,15,16,17,18,19,1,20,21,22,23,2,35,38,3,41,49,4,50,56,5,64,67,6,73,79,7,88,89,8,92,97,9];
 
+function createNumberButton(number) {
+  return $('<button>' + number + '</button>').click(function () {
+    playNumbers([number], 0);
+  });
+}
+
+function createNumberButtons(numbers) {
+  return $('<span/>').append(numbers.map(createNumberButton));
+}
+
 $(function () {
   var numbers = undefined;
 
@@ -124,6 +134,8 @@ $(function () {
   });
 
   $('#check').click(function () {
+    $('#message-bottom').text('');
+    var numberButtons = createNumberButtons(numbers);
     var userNumbers = $('#numbers').val().split(/\D+/).filter(function (item) {
       return isNumeric(item);
     }).map(function(item) {
@@ -131,10 +143,11 @@ $(function () {
     });
     // http://stackoverflow.com/questions/7837456/how-to-compare-arrays-in-javascript
     if (userNumbers.toString() == numbers.toString()) {
-      $('#message-bottom').text('Dobrze!');
+      $('#message-bottom').append('<div>Dobrze!</div>');
     } else {
-      $('#message-bottom').text('Źle. To były liczby ' + numbers);
+      $('#message-bottom').append('<div>Źle</div>');
     }
+    $('#message-bottom').append($('<div/>').append('<span>Wylosowane liczby to były: </span>', numberButtons))
     resultMessages();
   });
 
