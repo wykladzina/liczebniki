@@ -103,7 +103,7 @@ $(function () {
   $('#start').click(function () {
     checkMessages();
     numbers = [];
-    for (var i = 0; i < 3; i++) {
+    for (var i = 0; i < +$('#howManyNumbers').val(); i++) {
       var number = choose(availableNumbers);
       numbers.push(number);
     }
